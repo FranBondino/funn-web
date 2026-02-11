@@ -147,6 +147,59 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   // =========================================================
+  //  CLIENTES SCROLLYTELLING
+  // =========================================================
+  const clientesWrapper = document.querySelector('.clientes-scroll__wrapper');
+  const clientesCards = document.querySelectorAll('.clientes-scroll__card');
+  const clientesCounter = document.querySelector('.clientes-scroll__counter-current');
+  const clientesProgressFill = document.querySelector('.clientes-scroll__progress-fill');
+  const totalClientes = clientesCards.length;
+  let currentClienteIndex = -1;
+
+  const updateClientesScroll = () => {
+    if (!clientesWrapper || !totalClientes || isMobile()) return;
+
+    const rect = clientesWrapper.getBoundingClientRect();
+    const wrapperH = clientesWrapper.offsetHeight;
+    const scrollableH = wrapperH - window.innerHeight;
+
+    if (scrollableH <= 0) return;
+
+    const rawProgress = -rect.top / scrollableH;
+    const progress = Math.max(0, Math.min(1, rawProgress));
+
+    // Map progress to card index (0 to totalClientes - 1)
+    const newIndex = Math.min(
+      totalClientes - 1,
+      Math.floor(progress * totalClientes)
+    );
+
+    // Update progress bar
+    if (clientesProgressFill) {
+      clientesProgressFill.style.width = `${progress * 100}%`;
+    }
+
+    // Only update DOM when index changes
+    if (newIndex !== currentClienteIndex) {
+      currentClienteIndex = newIndex;
+
+      clientesCards.forEach((card, i) => {
+        card.classList.remove('clientes-scroll__card--active', 'clientes-scroll__card--above');
+        if (i === currentClienteIndex) {
+          card.classList.add('clientes-scroll__card--active');
+        } else if (i < currentClienteIndex) {
+          card.classList.add('clientes-scroll__card--above');
+        }
+      });
+
+      // Update counter
+      if (clientesCounter) {
+        clientesCounter.textContent = String(currentClienteIndex + 1).padStart(2, '0');
+      }
+    }
+  };
+
+  // =========================================================
   //  UNIFIED SCROLL HANDLER (rAF throttled)
   // =========================================================
   let ticking = false;
@@ -169,6 +222,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Horizontal scroll
       updateHorizontalScroll();
+
+      // Clientes scrollytelling
+      updateClientesScroll();
 
       ticking = false;
     });
