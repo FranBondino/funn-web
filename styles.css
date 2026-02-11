@@ -57,7 +57,8 @@ a {
   text-decoration: none;
 }
 
-ul, ol {
+ul,
+ol {
   list-style: none;
 }
 
@@ -248,15 +249,32 @@ ul, ol {
   overflow: hidden;
 }
 
-.hero::before {
-  content: '';
+/* Parallax background glow orb */
+.hero__parallax-bg {
   position: absolute;
   top: -200px;
   right: -200px;
   width: 600px;
   height: 600px;
-  background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+  background: radial-gradient(circle, var(--accent-glow-strong) 0%, var(--accent-glow) 30%, transparent 70%);
   pointer-events: none;
+  will-change: transform;
+  z-index: 0;
+}
+
+.hero__parallax-container {
+  position: relative;
+  z-index: 1;
+}
+
+/* Title line-by-line reveal */
+.hero__title-line {
+  display: block;
+  overflow: hidden;
+}
+
+.hero__title-line>* {
+  display: inline;
 }
 
 .hero__content {
@@ -410,31 +428,55 @@ ul, ol {
 }
 
 /* ===========================================
-   SERVICIOS
+   SERVICIOS — Horizontal Scroll
    =========================================== */
-.services-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1px;
-  background: var(--gray-mid);
-  border: 1px solid var(--gray-mid);
-  border-radius: var(--radius-lg);
+.servicios {
+  padding-bottom: 0;
+}
+
+.servicios__header-container {
+  padding-bottom: 40px;
+}
+
+.hscroll {
+  height: 300vh;
+  position: relative;
+}
+
+.hscroll__sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  align-items: center;
   overflow: hidden;
 }
 
+.hscroll__track {
+  display: flex;
+  gap: 24px;
+  padding: 0 48px;
+  will-change: transform;
+}
+
 .service-card {
+  flex: 0 0 340px;
   padding: 40px 32px;
-  background: var(--black);
-  transition: var(--transition);
+  background: var(--black-light);
+  border: 1px solid var(--gray-mid);
+  border-radius: var(--radius-lg);
+  transition: border-color 0.4s ease, box-shadow 0.4s ease, transform 0.4s ease;
 }
 
 .service-card:hover {
-  background: var(--black-light);
+  border-color: var(--accent);
+  box-shadow: 0 0 40px var(--accent-glow);
+  transform: translateY(-4px);
 }
 
 .service-card__icon {
-  width: 44px;
-  height: 44px;
+  width: 48px;
+  height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -445,7 +487,7 @@ ul, ol {
 }
 
 .service-card__title {
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 600;
   margin-bottom: 10px;
   letter-spacing: -0.01em;
@@ -455,6 +497,31 @@ ul, ol {
   font-size: 14px;
   color: var(--gray-text);
   line-height: 1.65;
+}
+
+/* Scroll progress indicator */
+.hscroll__sticky::after {
+  content: '';
+  position: absolute;
+  bottom: 40px;
+  left: 48px;
+  right: 48px;
+  height: 2px;
+  background: var(--gray-mid);
+  border-radius: 1px;
+}
+
+.hscroll__sticky::before {
+  content: '';
+  position: absolute;
+  bottom: 40px;
+  left: 48px;
+  height: 2px;
+  background: var(--accent);
+  border-radius: 1px;
+  width: var(--hscroll-progress, 0px);
+  z-index: 1;
+  transition: none;
 }
 
 /* ===========================================
@@ -701,25 +768,48 @@ ul, ol {
 }
 
 /* Stagger children */
-.reveal-stagger > * {
+.reveal-stagger>* {
   opacity: 0;
   transform: translateY(20px);
   transition: opacity 0.5s ease, transform 0.5s ease;
 }
 
-.reveal-stagger--visible > * {
+.reveal-stagger--visible>* {
   opacity: 1;
   transform: translateY(0);
 }
 
-.reveal-stagger--visible > *:nth-child(1) { transition-delay: 0s; }
-.reveal-stagger--visible > *:nth-child(2) { transition-delay: 0.08s; }
-.reveal-stagger--visible > *:nth-child(3) { transition-delay: 0.16s; }
-.reveal-stagger--visible > *:nth-child(4) { transition-delay: 0.08s; }
-.reveal-stagger--visible > *:nth-child(5) { transition-delay: 0.16s; }
-.reveal-stagger--visible > *:nth-child(6) { transition-delay: 0.24s; }
-.reveal-stagger--visible > *:nth-child(7) { transition-delay: 0.16s; }
-.reveal-stagger--visible > *:nth-child(8) { transition-delay: 0.24s; }
+.reveal-stagger--visible>*:nth-child(1) {
+  transition-delay: 0s;
+}
+
+.reveal-stagger--visible>*:nth-child(2) {
+  transition-delay: 0.08s;
+}
+
+.reveal-stagger--visible>*:nth-child(3) {
+  transition-delay: 0.16s;
+}
+
+.reveal-stagger--visible>*:nth-child(4) {
+  transition-delay: 0.08s;
+}
+
+.reveal-stagger--visible>*:nth-child(5) {
+  transition-delay: 0.16s;
+}
+
+.reveal-stagger--visible>*:nth-child(6) {
+  transition-delay: 0.24s;
+}
+
+.reveal-stagger--visible>*:nth-child(7) {
+  transition-delay: 0.16s;
+}
+
+.reveal-stagger--visible>*:nth-child(8) {
+  transition-delay: 0.24s;
+}
 
 /* ===========================================
    RESPONSIVE
@@ -734,8 +824,28 @@ ul, ol {
     display: none;
   }
 
-  .services-grid {
-    grid-template-columns: repeat(2, 1fr);
+  .hscroll {
+    height: auto;
+  }
+
+  .hscroll__sticky {
+    position: relative;
+    height: auto;
+    flex-wrap: wrap;
+  }
+
+  .hscroll__track {
+    flex-wrap: wrap;
+    padding: 0 24px;
+  }
+
+  .hscroll__sticky::after,
+  .hscroll__sticky::before {
+    display: none;
+  }
+
+  .service-card {
+    flex: 0 0 calc(50% - 12px);
   }
 
   .metrics-grid {
@@ -808,8 +918,8 @@ ul, ol {
     font-size: 18px;
   }
 
-  .services-grid {
-    grid-template-columns: 1fr;
+  .service-card {
+    flex: 1 1 100%;
   }
 
   .metrics-grid {
