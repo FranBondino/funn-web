@@ -368,7 +368,7 @@ body.cn-loaded .cn-hero-sub {
 }
 
 .cn-client-block {
-    height: 300vh;
+    height: 250vh;
     position: relative;
 }
 
@@ -390,7 +390,7 @@ body.cn-loaded .cn-hero-sub {
     transition: opacity 1s ease;
     background:
         radial-gradient(ellipse 50% 50% at 50% 50%,
-            hsla(var(--accent-hue), 60%, 50%, 0.08) 0%,
+            hsla(var(--accent-hue), 60%, 50%, 0.14) 0%,
             transparent 70%);
 }
 
@@ -419,6 +419,21 @@ body.cn-loaded .cn-hero-sub {
     transform: translateY(0);
 }
 
+/* Exit animation — fade out & scale down as block leaves */
+.cn-client-block.cn-exiting .cn-client-block__content {
+    opacity: 0;
+    transform: translateY(-40px) scale(0.96);
+}
+
+.cn-client-block.cn-exiting .cn-client-block__bg {
+    opacity: 0;
+}
+
+.cn-client-block.cn-exiting .cn-client-block__number {
+    opacity: 0;
+    transform: scale(0.8) translateY(-30px);
+}
+
 .cn-client-block__number {
     font-size: clamp(72px, 10vw, 120px);
     font-weight: 900;
@@ -443,6 +458,33 @@ body.cn-loaded .cn-hero-sub {
     line-height: 1.1;
     margin-bottom: 20px;
     color: var(--white);
+}
+
+/* Client category icon */
+.cn-client-block__icon {
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    background: hsla(var(--accent-hue), 60%, 50%, 0.1);
+    border: 1px solid hsla(var(--accent-hue), 60%, 50%, 0.25);
+    color: hsla(var(--accent-hue), 60%, 70%, 1);
+    margin-bottom: 20px;
+    opacity: 0;
+    transform: translateY(16px) scale(0.9);
+    transition: opacity 0.6s ease 0.15s, transform 0.6s ease 0.15s;
+}
+
+.cn-client-block.cn-in-view .cn-client-block__icon {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+.cn-client-block__icon svg {
+    width: 28px;
+    height: 28px;
 }
 
 .cn-client-block__desc {
@@ -776,7 +818,7 @@ body::after {
     }
 
     .cn-client-block {
-        height: 200vh;
+        height: 180vh;
     }
 
     .cn-client-block__number {

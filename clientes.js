@@ -95,18 +95,38 @@ document.addEventListener('DOMContentLoaded', () => {
 
     statItems.forEach(el => statsObserver.observe(el));
 
-    // Client blocks — scroll-driven visibility
+    // Client blocks — scroll-driven visibility with enter/exit animations
     const clientObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add('cn-in-view');
+                entry.target.classList.remove('cn-exiting');
             } else {
                 entry.target.classList.remove('cn-in-view');
             }
         });
     }, { threshold: 0, rootMargin: '-40% 0px -40% 0px' });
 
-    clientBlocks.forEach(el => clientObserver.observe(el));
+    // Exit observer — detects when a block is about to leave the viewport from the top
+    const exitObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (!entry.isIntersecting) {
+                // Block has left viewport — check if it went up (scrolled past)
+                const rect = entry.target.getBoundingClientRect();
+                if (rect.bottom < window.innerHeight * 0.3) {
+                    entry.target.classList.add('cn-exiting');
+                    entry.target.classList.remove('cn-in-view');
+                }
+            } else {
+                entry.target.classList.remove('cn-exiting');
+            }
+        });
+    }, { threshold: 0, rootMargin: '0px 0px -60% 0px' });
+
+    clientBlocks.forEach(el => {
+        clientObserver.observe(el);
+        exitObserver.observe(el);
+    });
 
     // =========================================================
     //  COUNTER ANIMATION
